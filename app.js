@@ -776,7 +776,10 @@
     const views = document.querySelectorAll('.view');
 
     links.forEach((link) => {
-      link.addEventListener('click', () => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
         const target = link.dataset.target;
         if (!target) return;
 
