@@ -1,5 +1,5 @@
 # LogiGreen – Decarbonization KPI Cockpit
-
+![Image](https://github.com/user-attachments/assets/13a65d89-8c64-4406-8c38-f8080f5cf76a)
 LogiGreen adalah dashboard Next.js & Node.js yang dirancang untuk memantau kemajuan dekarbonisasi menuju **Net Zero Emissions GHG 2025** dan target **Reduce Emission < 29 mtCO₂e 2030**. Aplikasi ini menampilkan pandangan eksekutif dan operasional yang intuitif, kaya visual, serta mudah dieksplorasi oleh pemangku kepentingan bisnis.
 
 ## Fitur Utama
