@@ -186,6 +186,9 @@
       return acc;
     }, {});
 
+    const maxEmission = Math.max(...emissionValues, target2030);
+    const maxEffect = Math.max(...effectValues, 1);
+
     return new Chart(ctx, {
       type: 'line',
       data: {
@@ -196,8 +199,8 @@
             data: emissionValues,
             tension: 0.35,
             borderColor: '#39d0ff',
-            borderWidth: 2,
-            backgroundColor: 'rgba(57, 208, 255, 0.15)',
+            borderWidth: 2.5,
+            backgroundColor: 'rgba(57, 208, 255, 0.12)',
             fill: false,
             pointRadius: (ctx) => (initiativeIndexLookup[ctx.dataIndex] ? 5 : 0),
             pointHoverRadius: 6,
@@ -214,21 +217,22 @@
             label: 'Realized Decarbonization Effect',
             data: effectValues,
             tension: 0.35,
-            borderColor: 'rgba(77, 243, 157, 0.9)',
-            backgroundColor: 'rgba(77, 243, 157, 0.25)',
+            borderColor: 'rgba(77, 243, 157, 0.95)',
+            backgroundColor: 'rgba(77, 243, 157, 0.18)',
             yAxisID: 'y1',
             fill: true,
             pointRadius: 0,
-            borderWidth: 2
+            borderWidth: 2.5
           },
           {
             label: 'Target 2030',
             data: targetLine,
             borderDash: [6, 6],
-            borderColor: 'rgba(255, 255, 255, 0.38)',
-            borderWidth: 1.6,
+            borderColor: 'rgba(255, 255, 255, 0.45)',
+            borderWidth: 2,
             pointRadius: 0,
-            fill: false
+            fill: false,
+            yAxisID: 'y'
           }
         ]
       },
@@ -244,31 +248,60 @@
                   return labels[index];
                 }
                 return '';
+              },
+              font: {
+                size: 11
               }
             },
             grid: {
-              color: 'rgba(255, 255, 255, 0.08)'
+              color: 'rgba(255, 255, 255, 0.08)',
+              drawBorder: false
             }
           },
           y: {
+            position: 'left',
+            min: 0,
+            max: Math.ceil(maxEmission * 1.1),
+            ticks: {
+              font: {
+                size: 11
+              }
+            },
             title: {
               display: true,
               text: 'Emisi (mtCO₂e)',
-              color: 'rgba(248, 251, 249, 0.8)'
+              color: 'rgba(248, 251, 249, 0.9)',
+              font: {
+                size: 12,
+                weight: '600'
+              }
             },
             grid: {
-              color: 'rgba(255, 255, 255, 0.08)'
+              color: 'rgba(255, 255, 255, 0.08)',
+              drawBorder: false
             }
           },
           y1: {
             position: 'right',
+            min: 0,
+            max: Math.ceil(maxEffect * 1.1),
+            ticks: {
+              font: {
+                size: 11
+              }
+            },
             title: {
               display: true,
               text: 'Realized Effect (mtCO₂e)',
-              color: 'rgba(248, 251, 249, 0.8)'
+              color: 'rgba(248, 251, 249, 0.9)',
+              font: {
+                size: 12,
+                weight: '600'
+              }
             },
             grid: {
-              drawOnChartArea: false
+              display: false,
+              drawBorder: false
             }
           }
         },
@@ -281,20 +314,33 @@
             display: false
           },
           tooltip: {
+            backgroundColor: 'rgba(3, 30, 20, 0.8)',
+            titleColor: 'rgba(248, 251, 249, 0.95)',
+            bodyColor: 'rgba(248, 251, 249, 0.85)',
+            borderColor: 'rgba(77, 243, 157, 0.3)',
+            borderWidth: 1,
+            padding: 10,
+            titleFont: {
+              size: 12,
+              weight: '600'
+            },
+            bodyFont: {
+              size: 11
+            },
             callbacks: {
               title: (tooltip) => `Tanggal ${tooltip[0].label}`,
               label: (context) => {
                 if (context.dataset.label === 'Target 2030') {
-                  return `Target 2030: ${formatNumber(context.raw, 1)} mtCO₂e`;
+                  return `Target 2030: ${formatNumber(context.raw, 2)} mtCO₂e`;
                 }
                 if (context.dataset.label === 'Realized Decarbonization Effect') {
-                  return `Realized Effect: ${formatNumber(context.raw, 1)} mtCO₂e`;
+                  return `Realized Effect: ${formatNumber(context.raw, 2)} mtCO₂e`;
                 }
                 const initiative = initiativeIndexLookup[context.dataIndex];
                 if (initiative) {
-                  return `${context.dataset.label}: ${formatNumber(context.raw, 1)} mtCO₂e (Initiative: ${initiative.title})`;
+                  return `${context.dataset.label}: ${formatNumber(context.raw, 2)} mtCO₂e (Initiative: ${initiative.title})`;
                 }
-                return `${context.dataset.label}: ${formatNumber(context.raw, 1)} mtCO₂e`;
+                return `${context.dataset.label}: ${formatNumber(context.raw, 2)} mtCO₂e`;
               }
             }
           },
@@ -322,9 +368,9 @@
         datasets: [
           {
             data: [clamped, 100 - clamped],
-            backgroundColor: ['rgba(77, 243, 157, 0.9)', 'rgba(255, 255, 255, 0.08)'],
+            backgroundColor: ['rgba(77, 243, 157, 0.95)', 'rgba(255, 255, 255, 0.08)'],
             borderWidth: 0,
-            cutout: '72%',
+            cutout: '70%',
             circumference: 180,
             rotation: 270
           }
@@ -365,16 +411,18 @@
           {
             label: 'Emisi Aktual',
             data: totals.actual,
-            backgroundColor: ['rgba(57, 208, 255, 0.6)', 'rgba(77, 243, 157, 0.6)', 'rgba(255, 206, 84, 0.6)'],
+            backgroundColor: ['rgba(57, 208, 255, 0.75)', 'rgba(77, 243, 157, 0.75)', 'rgba(255, 206, 84, 0.75)'],
             borderRadius: 12,
-            maxBarThickness: 36
+            maxBarThickness: 40,
+            borderSkipped: false
           },
           {
             label: 'Target',
             data: totals.target,
-            backgroundColor: 'rgba(255, 255, 255, 0.18)',
+            backgroundColor: 'rgba(255, 255, 255, 0.15)',
             borderRadius: 12,
-            maxBarThickness: 36
+            maxBarThickness: 40,
+            borderSkipped: false
           }
         ]
       },
@@ -383,19 +431,40 @@
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: 'bottom'
+            position: 'bottom',
+            labels: {
+              font: {
+                size: 12,
+                weight: '500'
+              },
+              padding: 16,
+              usePointStyle: false
+            }
           }
         },
         scales: {
           x: {
             grid: {
-              display: false
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              font: {
+                size: 12,
+                weight: '500'
+              }
             }
           },
           y: {
             beginAtZero: true,
             grid: {
-              color: 'rgba(255, 255, 255, 0.08)'
+              color: 'rgba(255, 255, 255, 0.08)',
+              drawBorder: false
+            },
+            ticks: {
+              font: {
+                size: 11
+              }
             }
           }
         }
